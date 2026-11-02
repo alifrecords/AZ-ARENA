@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B0C0F">
+<title>Admin — AZIMXODJAYEV MUSIC ARENA</title>
+<link rel="manifest" href="/manifest-admin.webmanifest">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/shared.css">
+<link rel="stylesheet" href="/assets/admin.css">
+</head>
+<body>
+
+<!-- Kirish: AZ-Playlist bilan bir xil — GitHub tokeni parol vazifasini bajaradi -->
+<div id="login" hidden>
+  <form class="panel login-card" id="loginForm" autocomplete="off">
+    <div class="logo"><div class="az">AZ</div><div><b class="brand">MUSIC <span>ARENA</span></b><div class="muted small">Admin panel</div></div></div>
+    <h2>GitHub'ga ulanish</h2>
+    <p class="muted small" style="margin:0;line-height:1.5">AZ-Playlist'dagi kabi: admin GitHub tokeni bilan kiradi. Token faqat shu brauzerda saqlanadi va parol vazifasini bajaradi.</p>
+    <div class="grid2">
+      <label class="f">GitHub hisob<input id="ghOwner" class="mono" placeholder="alifrecords" autocapitalize="off" spellcheck="false"></label>
+      <label class="f">Repozitoriy<input id="ghRepo" class="mono" placeholder="AZ-Arena" autocapitalize="off" spellcheck="false"></label>
+    </div>
+    <label class="f">Token (Fine-grained, Contents: Read and write)<input id="ghToken" type="password" class="mono" placeholder="github_pat_…" spellcheck="false"></label>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="btn primary" style="height:42px;padding:0 20px">Ulanish</button>
+      <a class="btn" style="height:42px" href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">Token yaratish / tahrirlash</a>
+    </div>
+    <div id="loginMsg" class="small" style="min-height:18px;line-height:1.5"></div>
+  </form>
+</div>
+
+<div class="layout" id="app" hidden>
+  <nav class="side" aria-label="Admin menyu">
+    <div class="logo"><div class="az">AZ</div><div><b class="brand" style="font-size:12px">MUSIC <span>ARENA</span></b><div class="muted small">Admin panel</div></div></div>
+    <a href="#top" class="on">Boshqaruv paneli</a>
+    <a href="#tolovlar">To'lovlar <span class="pill" id="navPending" style="background:var(--amber);color:#0B0C0F" hidden></span></a>
+    <a href="#kodlar">Faollashtirish kodlari</a>
+    <a href="#tariflar">Tariflar va sinov</a>
+    <a href="#karta">To'lov kartasi</a>
+    <a href="#bot">Telegram bot</a>
+    <a href="#qurilmalar">Foydalanuvchilar</a>
+    <div class="grow"></div>
+    <span class="muted small" id="connInfo" style="padding:0 12px 6px"></span>
+    <a href="/" target="_blank">Dasturni ochish ↗</a>
+    <a href="#" id="logout">Chiqish (tokenni o'chirish)</a>
+  </nav>
+
+  <main id="top">
+    <div class="sec-head">
+      <h1>Boshqaruv paneli</h1>
+      <div class="grow"></div>
+      <button class="btn" id="reloadBtn">Yangilash</button>
+      <span id="botBadge" class="badge"></span>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <section class="panel" id="tolovlar" style="overflow:hidden">
+      <div class="sec-head pad">
+        <h2>To'lovlar</h2><span class="muted small">Cheklar Telegram botdan avtomatik keladi</span>
+        <div class="grow"></div>
+        <select id="payFilter"><option value="pending">Kutilayotgan</option><option value="all">Hammasi</option></select>
+      </div>
+      <div class="scroll"><table style="min-width:860px"><thead><tr><th>ID</th><th>Xaridor</th><th>Dastur ID</th><th>Tarif</th><th>Summa</th><th>Chek</th><th>Vaqt</th><th>Amal</th></tr></thead><tbody id="payRows"></tbody></table></div>
+    </section>
+
+    <div class="row2">
+      <section class="panel sec" id="karta">
+        <div><h2>To'lov qabul qilish kartasi</h2><div class="muted small" style="margin-top:2px">Shu karta "Sinov tugadi" oynasida va Telegram botda ko'rsatiladi</div></div>
+        <div class="cardview">
+          <div style="display:flex;justify-content:space-between"><span class="muted small" style="font-weight:700;letter-spacing:.1em">KO'RINISHI</span><b id="cvSys" style="letter-spacing:.06em;font-size:12px">UZCARD</b></div>
+          <span class="mono" id="cvNum" style="font-size:22px;letter-spacing:.04em">0000 0000 0000 0000</span>
+          <span class="muted" id="cvHolder">Karta egasi</span>
+        </div>
+        <label class="f">Karta raqami<input id="cardNum" inputmode="numeric" placeholder="0000 0000 0000 0000" class="mono big"></label>
+        <div style="display:flex;flex-wrap:wrap;gap:10px">
+          <label class="f" style="flex:2 1 200px">Karta egasi<input id="cardHolder" placeholder="Ism Familiya" class="big"></label>
+          <label class="f" style="flex:1 1 120px">To'lov tizimi<select id="cardSys" class="big"><option>UZCARD</option><option>HUMO</option><option>VISA</option><option>MASTERCARD</option></select></label>
+        </div>
+        <button class="btn primary big" id="saveCard">Kartani saqlash</button>
+      </section>
+
+      <section class="panel sec" id="tariflar">
+        <h2>Tariflar va bepul sinov</h2>
+        <label class="toggle" style="cursor:default">Bepul sinov muddati
+          <span style="display:flex;align-items:center;gap:6px"><input id="trialMin" type="number" min="0" max="1440" class="mono" style="width:70px;text-align:center"><span class="muted">daqiqa</span></span>
+        </label>
+        <div class="scroll"><table><thead><tr><th>Kod</th><th>Nomi</th><th>Kun (0 = umrbod)</th><th>Narx, so'm</th><th>Faol</th><th></th></tr></thead><tbody id="tariffRows"></tbody></table></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" id="addTariff" style="border-style:dashed">+ Tarif qo'shish</button><div class="grow"></div><button class="btn primary" id="saveTariffs">Tariflarni saqlash</button></div>
+      </section>
+    </div>
+
+    <div class="row2">
+      <section class="panel sec" id="bot">
+        <div><h2>Telegram bot</h2><div class="muted small" style="margin-top:2px">Bot to'lov ma'lumotini beradi, chekni qabul qiladi va sizga yuboradi</div></div>
+        <div class="step"><i>1</i><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <b>Botni ulash</b>
+          <span class="muted small">@BotFather → /newbot → bergan tokenni shu yerga kiriting.</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="botToken" type="password" class="mono" placeholder="123456789:AA…" style="flex:1 1 220px;min-width:0"><button class="btn primary" id="botConnect">Botni ulash</button></div>
+          <span id="botState" class="small"></span>
+        </div></div>
+        <div class="step"><i>2</i><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <b>Admin chatini bog'lash</b>
+          <span class="muted small">To'lov cheklari va Tasdiqlash / Rad etish tugmalari shu chatga keladi.</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn" id="linkChat">Bog'lash</button><button class="btn ghost" id="testChat">Sinov xabari</button><span id="chatState" class="small"></span></div>
+          <div id="linkBox" class="linkbox" hidden></div>
+        </div></div>
+        <button class="toggle" data-k="notify"><span>Chek kelganda menga xabar yuborish<small>Tasdiqlash / Rad etish tugmalari bilan</small></span><span class="switch"></span></button>
+        <button class="toggle" data-k="autoSend"><span>Tasdiqlashsiz avtomatik kod yuborish<small>Tavsiya etilmaydi: chekni o'zingiz tekshiring</small></span><span class="switch"></span></button>
+        <button class="toggle" data-k="remind"><span>Muddat tugashidan 3 kun oldin eslatish<small>Xaridorga bot orqali</small></span><span class="switch"></span></button>
+      </section>
+
+      <section class="panel sec" id="kodlar">
+        <div class="sec-head"><h2>Faollashtirish kodlari</h2><div class="grow"></div>
+          <select id="genPlan"></select><button class="btn" id="genCode">+ Kod yaratish</button></div>
+        <div class="scroll" style="max-height:440px;overflow:auto"><table><thead><tr><th>Kod</th><th>Tarif</th><th>Kimga</th><th>Holat</th><th></th></tr></thead><tbody id="codeRows"></tbody></table></div>
+      </section>
+    </div>
+
+    <section class="panel" id="qurilmalar" style="overflow:hidden">
+      <div class="sec-head pad"><h2>Foydalanuvchilar (kompyuterlar)</h2></div>
+      <div class="scroll" style="max-height:420px;overflow:auto"><table style="min-width:600px"><thead><tr><th>Dastur ID</th><th>Holat</th><th>Sinovdan foydalangan</th><th>Birinchi kirish</th><th>Oxirgi faollik</th><th></th></tr></thead><tbody id="devRows"></tbody></table></div>
+    </section>
+  </main>
+</div>
+<script src="/assets/admin.js"></script>
+</body>
+</html>

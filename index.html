@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<script>
+if (location.protocol === 'file:') {
+  document.addEventListener('DOMContentLoaded', function () {
+    document.body.innerHTML = '<div style="font-family:Segoe UI,Arial,sans-serif;max-width:620px;margin:60px auto;padding:28px;border-radius:16px;background:#14161B;color:#E8EAF0;line-height:1.6">' +
+      '<h2 style="margin:0 0 12px">Sahifa noto\'g\'ri ochildi</h2>' +
+      '<p>Bu faylni papkadan ochib bo\'lmaydi — dastur sayt orqali ishlaydi.</p>' +
+      '<p>Brauzerda oching: <b style="color:#B8F25A">https://az-arena.pages.dev</b> — dastur<br>' +
+      'Admin panel: <b style="color:#B8F25A">https://az-arena.pages.dev/admin</b></p></div>';
+    document.body.style.background = '#0B0C0F';
+  });
+}
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B0C0F">
+<meta name="description" content="AZIMXODJAYEV MUSIC ARENA — teatr va konsertlar uchun sahna ovozini boshqarish dasturi">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<title>AZIMXODJAYEV MUSIC ARENA — sahna boshqaruvi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/shared.css">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div id="root">
+  <header class="top">
+    <div class="brand">
+      <div class="az">AZ</div>
+      <div class="brand-text">
+        <span class="brand-name">AZIMXODJAYEV MUSIC <em>ARENA</em></span>
+        <input id="showTitle" class="show-title" value="Yangi spektakl" aria-label="Spektakl nomi">
+      </div>
+    </div>
+
+    <div class="go-wrap">
+      <button id="goBtn" class="go" title="Probel">BOSHLA<span>PROBEL</span></button>
+      <div class="standby" id="standbyBox">
+        <div class="sb-line1"><span class="tag-standby">NAVBATDA</span><span class="mono muted" id="sbNum"></span><span class="sb-name" id="sbName">—</span></div>
+        <div class="sb-line2" id="sbInfo"></div>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button class="icon-btn" id="prevBtn" aria-label="Oldingi ishora (↑)" title="Oldingi (↑)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 18 10 12l8-6v12z"/><path d="M6 6v12"/></svg></button>
+      <button class="icon-btn" id="pauseBtn" aria-label="Hammasini pauza (P)" title="Pauza / davom (P)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6v12M15 6v12"/></svg></button>
+      <button class="icon-btn" id="nextBtn" aria-label="Keyingi ishora (↓)" title="Keyingi (↓)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l8 6-8 6V6z"/><path d="M18 6v12"/></svg></button>
+      <button class="panic" id="panicBtn" title="Esc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>HAMMASINI TO'XTAT</button>
+    </div>
+
+    <div class="clock-box">
+      <div><span class="lbl">SPEKTAKL VAQTI</span><span class="mono clock" id="clock">00:00:00.0</span></div>
+      <div class="mini-meters" aria-hidden="true"><div><i id="mmL"></i></div><div><i id="mmR"></i></div></div>
+      <button class="lic-badge" id="licBadge"></button>
+    </div>
+  </header>
+
+  <div class="body">
+    <main class="left">
+      <section class="panel cues">
+        <div class="cues-head">
+          <h2>Ishoralar ro'yxati</h2>
+          <span class="muted small" id="cueCount"></span>
+          <div class="grow"></div>
+          <div class="seg" id="filters">
+            <button data-f="all" class="on">Hammasi</button>
+            <button data-f="audio">Ovoz</button>
+            <button data-f="fade">So'nish</button>
+            <button data-f="stop">To'xtatish</button>
+          </div>
+          <label class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="sr">Qidirish</span><input id="search" placeholder="Qidirish"></label>
+        </div>
+        <div class="cues-tools edit-only">
+          <button class="btn" id="addAudio">+ Ovoz</button>
+          <button class="btn" data-add="fade">+ So'nish</button>
+          <button class="btn" data-add="stop">+ To'xtatish</button>
+          <button class="btn" data-add="group">+ Guruh</button>
+          <button class="btn" data-add="memo">+ Izoh</button>
+          <div class="grow"></div>
+          <button class="btn ghost" id="moveUp" aria-label="Yuqoriga">↑</button>
+          <button class="btn ghost" id="moveDown" aria-label="Pastga">↓</button>
+          <button class="btn ghost" id="dupCue">Nusxa</button>
+          <button class="btn danger" id="delCue">O'chirish</button>
+          <input type="file" id="fileInput" accept="audio/*" multiple hidden>
+        </div>
+        <div class="table-wrap">
+          <div class="table">
+            <div class="row head"><span></span><span>№</span><span>Ishora</span><span>Turi</span><span>Nishon</span><span>Oldin kutish</span><span>Davomiyligi</span><span>Keyin kutish</span><span></span></div>
+            <div id="cueRows"></div>
+          </div>
+          <div class="empty" id="emptyState">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <b>Audio fayllarni shu yerga tashlang</b>
+            <span class="muted">yoki "+ Ovoz" tugmasini bosing. MP3, WAV, OGG, M4A</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel inspector" id="inspector">
+        <div class="tabs" id="tabs"></div>
+        <div class="insp-body" id="inspBody"></div>
+      </section>
+    </main>
+
+    <aside class="right">
+      <section class="panel cart">
+        <div class="cart-head">
+          <h2>Boshqaruv pulti</h2>
+          <span class="muted small">tanlangan ishoraga ta'sir qiladi</span>
+          <div class="grow"></div>
+          <div class="seg" id="pages"><button data-p="0" class="on">A</button><button data-p="1">B</button><button data-p="2">C</button></div>
+        </div>
+        <div class="pads" id="pads"></div>
+      </section>
+
+      <section class="panel outputs">
+        <div class="cart-head"><h2>Chiqish</h2><span class="muted small">umumiy L / R</span><div class="grow"></div>
+          <label class="small muted" style="display:flex;align-items:center;gap:6px">Umumiy <input type="range" id="masterVol" min="-40" max="6" step="0.5" value="0" style="width:110px;height:auto;padding:0"> <span class="mono" id="masterVal">0.0 dB</span></label>
+        </div>
+        <div class="big-meters">
+          <div class="bm"><div class="bm-track"><i id="bmL"></i><b id="pkL"></b></div><span class="mono muted">L</span></div>
+          <div class="bm"><div class="bm-track"><i id="bmR"></i><b id="pkR"></b></div><span class="mono muted">R</span></div>
+          <div class="scale mono muted"><span>0</span><span>−6</span><span>−12</span><span>−24</span><span>−48</span></div>
+          <div class="running-list" id="runningList"></div>
+        </div>
+      </section>
+
+      <section class="panel files">
+        <div class="cart-head"><h2>Spektakl fayli</h2></div>
+        <div class="file-btns">
+          <button class="btn" id="exportBtn">Saqlash (.azshow)</button>
+          <button class="btn" id="importBtn">Ochish</button>
+          <button class="btn ghost edit-only" id="newShowBtn">Yangi spektakl</button>
+          <input type="file" id="importInput" accept=".azshow,application/json" hidden>
+        </div>
+        <p class="muted small" style="margin:0">Spektakl va audio fayllar shu brauzerda avtomatik saqlanadi. Boshqa kompyuterga ko'chirish uchun .azshow faylini saqlang.</p>
+      </section>
+    </aside>
+  </div>
+
+  <footer class="status">
+    <div class="seg" id="modeSeg"><button data-m="edit" class="on">Repetitsiya</button><button data-m="show">Spektakl</button></div>
+    <span id="stCount"></span>
+    <span id="stRunning"></span>
+    <div class="grow"></div>
+    <span class="muted keys">Probel — BOSHLA · Esc — to'xtatish · ↑↓ — navbat · P — pauza</span>
+    <span id="stServer"></span>
+  </footer>
+</div>
+
+<div class="drop-overlay" id="dropOverlay" hidden><div>Audio fayllarni qo'yib yuboring</div></div>
+
+<div class="paywall" id="paywall" hidden>
+  <section class="pw-card" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+    <div class="pw-head">
+      <div class="az">AZ</div>
+      <span class="brand-name">AZIMXODJAYEV MUSIC <em>ARENA</em></span>
+      <div class="grow"></div>
+      <span class="pw-timer" id="pwTimer"></span>
+      <button class="btn ghost" id="pwClose" aria-label="Yopish">✕</button>
+    </div>
+    <div class="pw-body">
+      <div>
+        <h1 id="pwTitle">20 daqiqalik bepul sinov tugadi</h1>
+        <p class="muted pw-sub" id="pwSub">Spektaklni davom ettirish uchun PRO tarifni tanlang. Loyihangiz va ishoralaringiz saqlangan — faollashtirgach shu joydan davom etasiz.</p>
+      </div>
+      <div class="plans" id="plans"></div>
+      <div class="pw-cols">
+        <div class="pw-col">
+          <h2>Qanday faollashtiriladi</h2>
+          <ol class="steps">
+            <li><i>1</i><span>Yuqoridan tarifni tanlang.</span></li>
+            <li><i>2</i><span>Ko'rsatilgan kartaga <b class="pw-amount"></b> o'tkazing. Izohga ID raqamingizni yozing.</span></li>
+            <li><i>3</i><span>To'lov chekini (skrinshot) Telegram botimizga yuboring.</span></li>
+            <li><i>4</i><span>Admin tasdiqlagach, bot sizga tanlangan tarifga mos <b>faollashtirish kodini</b> yuboradi. Kodni pastga kiriting.</span></li>
+          </ol>
+          <a class="tg-btn" id="tgBtn" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4 3 11l6 2 2 6 3-4 5 4 2-15z"/><path d="m9 13 8-6"/></svg>Telegram bot orqali to'lash</a>
+        </div>
+        <div class="pw-col">
+          <div class="paycard">
+            <div class="pc-top"><span class="lbl">TO'LOV KARTASI</span><b id="pcSys"></b></div>
+            <div class="pc-num"><span class="mono" id="pcNum"></span><button class="btn" id="copyCard">Nusxa</button></div>
+            <div class="pc-info">
+              <div><span class="lbl2">Karta egasi</span><b id="pcHolder"></b></div>
+              <div><span class="lbl2">Summa</span><b class="pw-amount accent"></b></div>
+              <div><span class="lbl2">Izohga yozing</span><b class="mono" id="pcId"></b></div>
+            </div>
+          </div>
+          <form id="codeForm" class="code-form">
+            <label for="codeInput" class="lbl2">Faollashtirish kodi</label>
+            <div class="code-row"><input id="codeInput" class="mono" placeholder="AZ-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn primary">Faollashtirish</button></div>
+            <span class="code-msg" id="codeMsg"></span>
+          </form>
+          <span class="muted small">Kod faqat shu kompyuterda ishlaydi va tarif muddati tugaguncha amal qiladi.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-bg" id="padModal" hidden>
+  <form class="panel pad-form" id="padForm">
+    <h2>Pult tugmasini sozlash</h2>
+    <label class="f">Amal<select id="padAction"></select></label>
+    <label class="f" id="padArgWrap">Qiymat<input id="padArg"></label>
+    <label class="f">Nomi (ixtiyoriy)<input id="padLabel" maxlength="24"></label>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn ghost" id="padCancel">Bekor</button><button class="btn primary">Saqlash</button></div>
+  </form>
+</div>
+
+<script src="/api/env"></script>
+<script src="/assets/store.js"></script>
+<script src="/assets/engine.js"></script>
+<script src="/assets/license.js"></script>
+<script src="/assets/app.js"></script>
+</body>
+</html>

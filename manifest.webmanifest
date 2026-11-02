@@ -1,0 +1,16 @@
+{
+  "name": "AZIMXODJAYEV MUSIC ARENA",
+  "short_name": "AZ ARENA",
+  "description": "Sahna ovozini boshqarish dasturi",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0B0C0F",
+  "theme_color": "#0B0C0F",
+  "lang": "uz",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

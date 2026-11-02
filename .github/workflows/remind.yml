@@ -1,0 +1,20 @@
+name: PRO muddati eslatmasi
+
+# Har soatda saytni chaqiradi: muddati 3 kun ichida tugaydigan xaridorlarga bot eslatma yuboradi.
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      SITE: ${{ vars.SITE_URL || 'https://az-arena.pages.dev' }}
+    steps:
+      - name: Eslatmalarni yuborish
+        run: curl -fsS -m 60 -X POST "$SITE/api/cron" || true
